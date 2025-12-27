@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AlgoTrader Consultant Terminal</title>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <style>
+        body {
+            background-color: #0c0c0c;
+            color: #d1d1d1;
+            font-family: 'Courier New', Courier, monospace;
+            padding: 20px;
+            margin: 0;
+        }
+        #terminal {
+            height: 90vh;
+            overflow-y: auto;
+            border: 1px solid #333;
+            padding: 15px;
+            background: #000;
+        }
+        .log-entry { margin-bottom: 5px; line-height: 1.4; }
+        .timestamp { color: #888; margin-right: 15px; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-thumb { background: #333; }
+    </style>
+</head>
+<body>
+    <h3>> ALGO_TRADER_CONSULTANT_V1.0</h3>
+    <div id="terminal"></div>
+
+    <script>
+        // Force the connection to use 'polling' first to avoid Mac security blocks
+        const socket = io({
+            transports: ["polling", "websocket"]
+        });
+
+        socket.on('connect', () => {
+            console.log("CONNECTED TO SERVER!");
+        });
+
+        socket.on('new_log', function(data) {
+            console.log("New log received:", data); // This will show in the Inspect Console
+            const terminal = document.getElementById('terminal');
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            entry.innerHTML = `<span class="timestamp">[${data.time}]</span><span style="color: ${data.color}">${data.msg}</span>`;
+            terminal.appendChild(entry);
+            terminal.scrollTop = terminal.scrollHeight;
+        });
+    </script>
+</body>
+</html>
