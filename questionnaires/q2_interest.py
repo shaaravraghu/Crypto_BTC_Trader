@@ -1,6 +1,9 @@
+'''
+Docstring for questionnaires.q2_interest
+'''
 import time
 from metrics import vol_24h, vol_spike, order_book_whale, sr_thresholds, bid_ask_spread
-
+'''
 def survey_market(data_snapshot):
     """
     Q2: Sudden Interest?
@@ -63,6 +66,8 @@ def survey_market(data_snapshot):
     
 
     # Return standardized form for the Web Interface
+    '''
+'''
     return {
         "questionnaire": "Q2",
         "status": "Lead Generated" if lead_generated else "Surveying",
@@ -71,27 +76,76 @@ def survey_market(data_snapshot):
         "metrics_detail": results,
         "trigger_next": lead_generated
     }
+    '''
 
-def run_q2_loop(data_engine):
-    """
-    The orchestrator for Q2's 10-minute interval.
-    In a real system, this would be managed by a task scheduler (Celery/APScheduler).
-    """
-    while True:
-        # Get live data from the engine
-        snapshot = data_engine.get_snapshot()
-        
-        # Process Q2
-        report = survey_market(snapshot)
-        
-        # Logic Chain: If Q2 succeeds, call Q1 and Q3
-        if report['trigger_next']:
-            # Import here to avoid circular imports
-            from questionnaires import q1_breakthrough, q3_aggressive
-            
-            # Pass the lead to the next stage
-            q1_breakthrough.process_lead(snapshot)
-            q3_aggressive.process_lead(snapshot)
-            
-        # Standardized 10-minute wait
-        time.sleep(600)
+def survey_market(data_snapshot):
+    print("DEBUG [LOGIC]: Q2 Surveying metrics...")
+    results = {}
+    total_points = 0.0
+    
+    try:
+        # 1. 24 Hour Volume
+        print("[Q2] Processing metric 1: vol_24h...")
+        m1 = vol_24h.process(data_snapshot.get('vol_24h', 0), data_snapshot.get('vol_prev_hour', 0))
+        results['vol_24h'] = m1
+        total_points += m1.get('points', 0)
+        print(f"[Q2] ✓ vol_24h complete: {m1.get('points', 0)} points")
+
+        # 2. Volume Spike
+        print("[Q2] Processing metric 2: vol_spike...")
+        m2 = vol_spike.process(data_snapshot.get('curr_vol', 0), data_snapshot.get('avg_vol', 1), points_to_award=3.0)
+        results['vol_spike'] = m2
+        total_points += m2.get('points', 0)
+        print(f"[Q2] ✓ vol_spike complete: {m2.get('points', 0)} points")
+
+        # 3. Whale Activity
+        print("[Q2] Processing metric 3: whale_activity...")
+        m3 = order_book_whale.process(data_snapshot.get('bid_vol', []), data_snapshot.get('ask_vol', []), points_to_award=2.0)
+        results['whale_activity'] = m3
+        total_points += m3.get('points', 0)
+        print(f"[Q2] ✓ whale_activity complete: {m3.get('points', 0)} points")
+
+        # 4. S/R Thresholds
+        print("[Q2] Processing metric 4: sr_thresholds...")
+        m4 = sr_thresholds.process(data_snapshot.get('price', 0), data_snapshot.get('sr_levels', {}), context="Q2", points_to_award=2.0)
+        results['sr_proximity'] = m4
+        total_points += m4.get('points', 0)
+        print(f"[Q2] ✓ sr_thresholds complete: {m4.get('points', 0)} points")
+
+        # 5. Bid-Ask Spread
+        print("[Q2] Processing metric 5: bid_ask_spread...")
+        m5 = bid_ask_spread.process(data_snapshot.get('best_bid', 0), data_snapshot.get('best_ask', 0), points_to_award=1.0)
+        results['spread'] = m5
+        total_points += m5.get('points', 0)
+        print(f"[Q2] ✓ bid_ask_spread complete: {m5.get('points', 0)} points")
+
+    except Exception as e:
+        # This will tell you if one of the Metric Modules (like vol_24h) is buggy
+        print(f"❌ CRITICAL: Metric calculation failed: {e}")
+        import traceback
+        traceback.print_exc()
+        # Return a "Safe" failing report so the orchestrator doesn't die
+        return {
+            "total_points": 0, 
+            "trigger_next": False, 
+            "metrics_detail": {},
+            "status": "Error",
+            "color": "red"
+        }
+
+    # Final Decision
+    lead_generated = total_points >= 6
+    
+    # Standardized return for the Orchestrator
+    result = {
+        "questionnaire": "Q2",
+        "total_points": total_points,
+        "trigger_next": lead_generated,
+        "metrics_detail": results,
+        "color": "green" if lead_generated else "blue",
+        "status": "Lead Generated" if lead_generated else "Surveying"
+    }
+    
+    print(f"[Q2 COMPLETE] Status: {result['status']}, Points: {total_points}, Trigger: {lead_generated}")
+    return result
+

@@ -1,82 +1,93 @@
 import threading
 import time
-from datetime import datetime
-from flask import Flask, render_template
-from flask_socketio import SocketIO, emit
+import traceback
 import sys
 import os
-
-# Add the parent directory (ALGO_TRADER_SYSTEM) to the path
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-# Import your custom modules
-from data_engine.websocket_client import BinanceEngine
+from datetime import datetime
+from flask import Flask, render_template
+from flask_socketio import SocketIO
 from questionnaires import q2_interest, q1_breakthrough, q3_aggressive
 
+
+# 1. Path Setup: Ensure custom modules are discoverable
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if BASE_DIR not in sys.path:
+    sys.path.append(BASE_DIR)
+
+# 2. Module Imports
+try:
+    from data_engine.websocket_client import BinanceEngine
+    print("WEB_APP: Custom modules loaded successfully.")
+except ImportError as e:
+    print(f"WEB_APP CRITICAL: Failed to import modules. {e}")
+    sys.exit(1)
+
+# 3. Flask & SocketIO Setup
 app = Flask(__name__)
+# cors_allowed_origins="*" is important for local development
 socketio = SocketIO(app, cors_allowed_origins="*")
 
-# Helper to push logs to the UI
+# 4. Global Logging Helper
 def ui_log(msg, color="#ffffff"):
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    """Pushes logs to the Web UI and prints them to the local terminal."""
+    timestamp = datetime.now().strftime("%H:%M:%S")
+    # Print to terminal so we can see it even if the browser is closed
+    print(f"[{timestamp}] [UI_LOG]: {msg}")
     socketio.emit('new_log', {
         'time': timestamp, 
         'msg': msg, 
         'color': color
     })
+    print(f"DEBUG [SERVER]: Log emitted to UI via SocketIO - {msg[:50]}...")
 
-def system_orchestrator():
-    """Runs the background logic without a Main file."""
-    print("DEBUG [SYSTEM]: Orchestrator Thread Started.")
-    engine = BinanceEngine()
-    # Start Binance Socket in its own thread
-    threading.Thread(target=engine.start, daemon=True).start()
-    print("DEBUG [SYSTEM]: Binance WebSocket thread launched.")
+# 5. The Background Brain (Orchestrator)
+# Initialize Orchestrator globally
+from orchestrator import SystemOrchestrator
+orchestrator = None
 
-    ui_log("SYSTEM START: Terminal linked to Binance wss://", "#00FF00")
-    
-    while True:
-        print(f"DEBUG [SYSTEM]: Loop Heartbeat at {datetime.now().strftime('%H:%M:%S')}")
-        # --- TEST LINE START ---
-        ui_log("CONNECTION ALIVE: Waiting for Binance data...", "#888888") 
-        # --- TEST LINE END ---
-        ui_log("SCANNING MARKET: Fetching latest snapshot...", "#3498db") # Blue
-
-        ui_log("Q2: Initiating 10-minute market survey...", "#3498db") # Blue
-        snapshot = engine.get_snapshot()
-
-        if snapshot['price'] == 0:
-            print("DEBUG [SYSTEM]: Waiting for data buffer to fill...")
-            ui_log("BUFFERING: Collecting initial market data...", "#888888")
-        else:
-            print(f"DEBUG [SYSTEM]: Snapshot captured. Price: {snapshot['price']}")
-            report = q2_interest.survey_market(snapshot)
-        # Run Q2 Survey
-        report = q2_interest.survey_market(snapshot)
-        
-        # Log Q2 Micro-decisions
-        for metric, data in report['metrics_detail'].items():
-            color = "#00ffff" if data['status'] else "#7f8c8d"
-            status_text = "PASSED" if data['status'] else "FAILED"
-            ui_log(f"  [Micro] {metric}: {status_text} | Points: {data['points']}", color)
-
-        if report['trigger_next']:
-            ui_log(f"LEAD GENERATED: Q2 Total Points {report['total_points']}", "#2ecc71") # Green
-            
-            # Start Q1 and Q3 in parallel threads
-            threading.Thread(target=q1_breakthrough.process_lead, args=(engine, ui_log)).start()
-            threading.Thread(target=q3_aggressive.process_lead, args=(engine, ui_log)).start()
-        else:
-            ui_log(f"Q2: Minimum points not reached ({report['total_points']}/6). Standing by.", "#e67e22")
-
-        time.sleep(10) # 10 Minute Cycle
-
+# 6. Web Routes
 @app.route('/')
 def index():
+    print("DEBUG [SERVER]: Route accessed: / (Dashboard)")
     return render_template('index.html')
 
-if __name__ == '__main__':
-    # Start the system orchestrator thread
-    threading.Thread(target=system_orchestrator, daemon=True).start()
-    socketio.run(app, port=5001)
+@app.route('/questionnaires/q1')
+def page_q1():
+    print("DEBUG [SERVER]: Route accessed: /questionnaires/q1")
+    return render_template('questionnaire.html', title="Q1: Breakthrough", endpoint="q1")
 
+@app.route('/questionnaires/q2')
+def page_q2():
+    print("DEBUG [SERVER]: Route accessed: /questionnaires/q2")
+    return render_template('questionnaire.html', title="Q2: Interest Survey", endpoint="q2")
+
+@app.route('/questionnaires/q3')
+def page_q3():
+    print("DEBUG [SERVER]: Route accessed: /questionnaires/q3")
+    return render_template('questionnaire.html', title="Q3: Aggression", endpoint="q3")
+
+@app.route('/questionnaires/q4')
+def page_q4():
+    print("DEBUG [SERVER]: Route accessed: /questionnaires/q4")
+    return render_template('questionnaire.html', title="Q4: Efficiency", endpoint="q4")
+
+@app.route('/questionnaires/q5')
+def page_q5():
+    print("DEBUG [SERVER]: Route accessed: /questionnaires/q5")
+    return render_template('questionnaire.html', title="Q5: Consultation", endpoint="q5")
+
+@app.route('/metrics/<name>')
+def page_metric(name):
+    print(f"DEBUG [SERVER]: Route accessed: /metrics/{name}")
+    return render_template('metric.html', metric_name=name)
+
+# 7. Execution Entry Point
+if __name__ == '__main__':
+    print(f"WEB_APP: Launching server on http://127.0.0.1:5001")
+    
+    # Initialize Orchestrator with UI Callback
+    orchestrator = SystemOrchestrator(ui_callback=ui_log)
+    orchestrator.start()
+    
+    # Run Flask-SocketIO
+    socketio.run(app, port=5001, debug=False)

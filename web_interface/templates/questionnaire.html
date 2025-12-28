@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>{{ title }} - AlgoTrader</title>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <style>
+        body {
+            background-color: #0c0c0c;
+            color: #d1d1d1;
+            font-family: 'Inter', sans-serif;
+            /* Modern font */
+            padding: 20px;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .container {
+            width: 80%;
+            max-width: 800px;
+            border: 1px solid #333;
+            padding: 20px;
+            background: #111;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .status-box {
+            padding: 15px;
+            margin-top: 20px;
+            border-left: 4px solid #333;
+            background: #1a1a1a;
+        }
+
+        .back-link {
+            align-self: flex-start;
+            margin-bottom: 20px;
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        .metric-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .metric-item {
+            background: #222;
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <a href="/" class="back-link">← Back to Dashboard</a>
+        <h1>{{ title }}</h1>
+        <p>Endpoint: <code>/questionnaires/{{ endpoint }}</code></p>
+
+        <div class="status-box">
+            <h3>Current Status</h3>
+            <p id="status-text">Waiting for update...</p>
+        </div>
+
+        <h3>Key Metrics Monitored</h3>
+        <!-- This would ideally be populated dynamically -->
+        <ul class="metric-list">
+            <li class="metric-item"><span>Metric A</span> <span>---</span></li>
+            <li class="metric-item"><span>Metric B</span> <span>---</span></li>
+        </ul>
+    </div>
+    <script>
+        console.log("DEBUG [QUESTIONNAIRE PAGE]: Initializing for {{ title }} (Endpoint: {{ endpoint }})...");
+        const socket = io();
+
+        socket.on('connect', () => {
+            console.log("DEBUG [QUESTIONNAIRE PAGE]: Connected to server socket.");
+        });
+
+        socket.on('new_log', (data) => {
+            // Check if log contains info relevant to this questionnaire
+            if (data.msg.includes("{{ endpoint|upper }}")) {
+                console.log("DEBUG [QUESTIONNAIRE PAGE]: Relevant log found:", data.msg);
+                document.getElementById('status-text').innerText = data.msg;
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>AlgoTrader Consultant Terminal</title>
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
@@ -11,6 +12,7 @@
             padding: 20px;
             margin: 0;
         }
+
         #terminal {
             height: 90vh;
             overflow-y: auto;
@@ -18,35 +20,96 @@
             padding: 15px;
             background: #000;
         }
-        .log-entry { margin-bottom: 5px; line-height: 1.4; }
-        .timestamp { color: #888; margin-right: 15px; }
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-thumb { background: #333; }
+
+        .log-entry {
+            margin-bottom: 5px;
+            line-height: 1.4;
+        }
+
+        .timestamp {
+            color: #888;
+            margin-right: 15px;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+        }
     </style>
 </head>
+
 <body>
-    <h3>> ALGO_TRADER_CONSULTANT_V1.0</h3>
-    <div id="terminal"></div>
+    <div style="max-width: 1000px; margin: 0 auto;">
+        <h3>> ALGO_TRADER_CONSULTANT_V2.0</h3>
+
+        <!-- Dashboard Grid -->
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px;">
+            <a href="/questionnaires/q2" style="text-decoration:none">
+                <div style="background: #1a1a1a; padding: 15px; border: 1px solid #333; color: white;">
+                    <div style="color: #3498db; font-weight: bold;">Q2: INTEREST</div>
+                    <div style="font-size: 0.8em; color: #888;">Main Loop (10m)</div>
+                </div>
+            </a>
+            <a href="/questionnaires/q1" style="text-decoration:none">
+                <div style="background: #1a1a1a; padding: 15px; border: 1px solid #333; color: white;">
+                    <div style="color: #f1c40f; font-weight: bold;">Q1: BREAKTHROUGH</div>
+                    <div style="font-size: 0.8em; color: #888;">Sub-Task (Retry)</div>
+                </div>
+            </a>
+            <a href="/questionnaires/q3" style="text-decoration:none">
+                <div style="background: #1a1a1a; padding: 15px; border: 1px solid #333; color: white;">
+                    <div style="color: #e67e22; font-weight: bold;">Q3: AGGRESSION</div>
+                    <div style="font-size: 0.8em; color: #888;">Sub-Task (Retry)</div>
+                </div>
+            </a>
+            <a href="/questionnaires/q4" style="text-decoration:none">
+                <div style="background: #1a1a1a; padding: 15px; border: 1px solid #333; color: white;">
+                    <div style="color: #9b59b6; font-weight: bold;">Q4: EFFICIENCY</div>
+                    <div style="font-size: 0.8em; color: #888;">Verification</div>
+                </div>
+            </a>
+            <a href="/questionnaires/q5" style="text-decoration:none">
+                <div style="background: #1a1a1a; padding: 15px; border: 1px solid #333; color: white;">
+                    <div style="color: #8e44ad; font-weight: bold;">Q5: CONSULTATION</div>
+                    <div style="font-size: 0.8em; color: #888;">Advice Generation</div>
+                </div>
+            </a>
+        </div>
+
+        <div id="terminal"
+            style="background: black; color: white; height: 500px; overflow-y: scroll; border: 1px solid #333; padding: 10px;">
+        </div>
+    </div>
 
     <script>
-        // Force the connection to use 'polling' first to avoid Mac security blocks
-        const socket = io({
-            transports: ["polling", "websocket"]
-        });
+        // 1. Connect to the server
+        const socket = io();
 
+        // 2. Debug: Check if connection is successful
         socket.on('connect', () => {
-            console.log("CONNECTED TO SERVER!");
+            console.log("Connected to Python Server!");
+            const term = document.getElementById('terminal');
+            term.innerHTML += '<div style="color: #00ff00; font-family: monospace;">[SYSTEM]: Browser Linked Successfully.</div>';
         });
 
-        socket.on('new_log', function(data) {
-            console.log("New log received:", data); // This will show in the Inspect Console
+        // 3. Listen for the 'new_log' event
+        socket.on('new_log', function (data) {
+            console.log("DEBUG [UI]: New log event received from server:", data);
             const terminal = document.getElementById('terminal');
+
             const entry = document.createElement('div');
-            entry.className = 'log-entry';
-            entry.innerHTML = `<span class="timestamp">[${data.time}]</span><span style="color: ${data.color}">${data.msg}</span>`;
+            entry.style.fontFamily = 'monospace';
+            entry.style.marginBottom = '4px';
+            entry.style.color = data.color;
+            entry.innerHTML = `<span style="color: #555">[${data.time}]</span> ${data.msg}`;
+
             terminal.appendChild(entry);
-            terminal.scrollTop = terminal.scrollHeight;
+            terminal.scrollTop = terminal.scrollHeight; // Auto-scroll
         });
     </script>
 </body>
+
 </html>

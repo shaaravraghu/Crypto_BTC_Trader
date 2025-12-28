@@ -6,6 +6,7 @@ def verify(data_snapshot, direction="buying"):
     Final confirmation for Aggressive Trading (Q3).
     Verdict >= 2 required.
     """
+    print(f"Q4: verify called — price={data_snapshot.get('price')}")
     results = {}
     total_points = 0.0
 
@@ -42,8 +43,9 @@ def verify(data_snapshot, direction="buying"):
 
     # Final Verification Decision
     is_confirmed = total_points >= 2
-    
-    return {
+    print(f"Q4: total_points={total_points} confirmed={is_confirmed}")
+
+    result = {
         "questionnaire": "Q4",
         "confirmed": is_confirmed,
         "total_points": total_points,
@@ -51,3 +53,6 @@ def verify(data_snapshot, direction="buying"):
         "color": "green" if is_confirmed else "red",
         "status": "Efficiency Verified" if is_confirmed else "Low Efficiency - Lead Blocked"
     }
+    
+    print(f"[Q4 COMPLETE] Status: {result['status']}, Points: {total_points}, Confirmed: {is_confirmed}")
+    return result

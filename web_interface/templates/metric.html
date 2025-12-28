@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>{{ metric_name }} - AlgoTrader</title>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <style>
+        body {
+            background-color: #0c0c0c;
+            color: #d1d1d1;
+            font-family: 'Inter', sans-serif;
+            padding: 20px;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 80%;
+            max-width: 800px;
+            border: 1px solid #333;
+            padding: 20px;
+            background: #111;
+            border-radius: 8px;
+        }
+
+        h1 {
+            color: #f1c40f;
+        }
+
+        .back-link {
+            align-self: flex-start;
+            margin-bottom: 20px;
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        .chart-placeholder {
+            width: 100%;
+            height: 300px;
+            background: #222;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #555;
+            margin-top: 20px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <a href="/" class="back-link">← Back to Dashboard</a>
+        <h1>Metric: {{ metric_name }}</h1>
+        <p>Real-time processing node for {{ metric_name }}.</p>
+
+        <div class="chart-placeholder">
+            [Live Chart Placeholder]
+        </div>
+
+        <h3>Recent Values</h3>
+        <p>Listening to websocket stream...</p>
+    </div>
+    <script>
+        console.log("DEBUG [METRIC PAGE]: Initializing for {{ metric_name }}...");
+        const socket = io();
+
+        socket.on('connect', () => {
+            console.log("DEBUG [METRIC PAGE]: Connected to server socket.");
+        });
+
+        // Placeholder for future metric-specific updates
+        socket.on('metric_update', (data) => {
+            if (data.name === "{{ metric_name }}") {
+                console.log("DEBUG [METRIC PAGE]: Received update for {{ metric_name }}:", data.value);
+            }
+        });
+    </script>
+</body>
+
+</html>

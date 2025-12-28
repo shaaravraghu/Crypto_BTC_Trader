@@ -6,6 +6,7 @@ def generate_advice(data_snapshot):
     Triggered after a buy/sell decision from Q1 or Q3/Q4.
     Provides duration-based suggestions based on volatility and trend structure.
     """
+    print(f"Q5: generate_advice started — timestamp={data_snapshot.get('timestamp')} price={data_snapshot.get('price')}")
     # 1. Short (Intra-day) Analysis
     # Uses Volume Spike and CVD to check immediate momentum
     m_spike = vol_spike.process(data_snapshot['curr_vol'], data_snapshot['avg_vol'], 0)
@@ -52,6 +53,10 @@ def generate_advice(data_snapshot):
         "color": "purple" # Specific color for the Final Advice step
     }
 
+    print("Q5: final advice prepared")
+    
+    print(f"[Q5 COMPLETE] Advice Generated - Short: {short_term_advice[:50]}..., Long: {med_long_advice[:50]}...")
+    
     # Print to console for the 'consultant' view
     print("\n--- FINAL TRADING CONSULTATION ---")
     print(f"SHORT TERM: {short_term_advice}")
