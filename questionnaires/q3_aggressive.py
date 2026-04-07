@@ -50,3 +50,25 @@ def evaluate_aggression(data_snapshot):
     
     print(f"[Q3 COMPLETE] Verdict: {result['verdict']}, Points: {total_points}, Success: {verdict_met}")
     return result
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
