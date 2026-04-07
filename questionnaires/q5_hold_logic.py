@@ -64,3 +64,11 @@ def generate_advice(data_snapshot):
     print("----------------------------------\n")
 
     return decision_report
+
+
+
+
+
+
+
+
