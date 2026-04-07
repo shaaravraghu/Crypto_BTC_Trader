@@ -149,3 +149,26 @@ def survey_market(data_snapshot):
     print(f"[Q2 COMPLETE] Status: {result['status']}, Points: {total_points}, Trigger: {lead_generated}")
     return result
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
