@@ -56,3 +56,19 @@ def verify(data_snapshot, direction="buying"):
     
     print(f"[Q4 COMPLETE] Status: {result['status']}, Points: {total_points}, Confirmed: {is_confirmed}")
     return result
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
