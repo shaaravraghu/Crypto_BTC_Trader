@@ -73,3 +73,27 @@ def evaluate_breakthrough(data_snapshot, direction="buying"):
     
     print(f"[Q1 COMPLETE] Status: {result['status']}, Points: {total_points}, Success: {verdict_met}")
     return result
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
