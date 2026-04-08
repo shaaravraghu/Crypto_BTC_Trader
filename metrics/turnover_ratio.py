@@ -33,3 +33,17 @@ def process(volume: float, market_cap: float, points_to_award: float = 2.0):
             "efficiency_multiplier": "High" if turnover_ratio > 0.03 else "Standard"
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
