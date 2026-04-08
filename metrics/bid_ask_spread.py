@@ -32,3 +32,18 @@ def process(best_bid: float, best_ask: float, points_to_award: float):
             "threshold": 0.3
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
