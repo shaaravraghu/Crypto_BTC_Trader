@@ -35,3 +35,15 @@ def process(rsi_value: float, context: str, points_to_award: float, direction: s
             "target_direction": direction
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+
