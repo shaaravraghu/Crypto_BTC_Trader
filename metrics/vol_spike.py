@@ -30,3 +30,20 @@ def process(current_volume: float, average_volume: float, points_to_award: float
             "spike_ratio": round(spike_ratio, 4)
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
