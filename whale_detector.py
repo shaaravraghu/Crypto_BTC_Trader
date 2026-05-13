@@ -136,3 +136,14 @@ class WhaleDetector:
         """Stop the monitoring loop."""
         self.running = False
         print("[WHALE DETECTOR] Stopping...")
+
+
+
+
+
+
+
+
+
+
+
