@@ -174,3 +174,26 @@ class SystemOrchestrator:
         print(f"[Q5 ADVICE] Short-term: {advice['verdict_summary']['Short_Term']}")
         print(f"[Q5 ADVICE] Med/Long-term: {advice['verdict_summary']['Medium_Long_Term']}")
         self.log(f"CONSULTATION READY: {advice['verdict_summary']['Short_Term']}", "#9b59b6")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
