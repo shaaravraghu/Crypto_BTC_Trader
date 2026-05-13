@@ -253,3 +253,18 @@ To be checked after every buy/ sell decision. Print out the decisions/ suggestio
 
 
 ---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
