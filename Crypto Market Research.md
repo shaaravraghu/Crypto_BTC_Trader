@@ -121,3 +121,14 @@ Q1 checks parameters until minimum points are reached and keeps trying every 5 m
 If either or both of Q3 or Q1 gets processed. Proceed to Q5.
 
 The information should be displayed (of each and every step) on a website.  
+
+
+
+
+
+
+
+
+
+
+
