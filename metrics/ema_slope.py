@@ -42,8 +42,3 @@ def process(ema_data: dict, context: str, points_to_award: float):
             "context_applied": context
         }
     }
-
-
-
-
-
