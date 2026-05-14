@@ -39,12 +39,3 @@ def process(total_bid_volume: float, total_ask_volume: float, points_to_award: f
             "detected_activity": activity_type
         }
     }
-
-
-
-
-
-
-
-
-
