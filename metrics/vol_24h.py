@@ -31,19 +31,3 @@ def process(current_24h_volume: float, previous_hour_volume: float):
             "increase_pct": round(increase_ratio * 100, 2)
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
