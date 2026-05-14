@@ -52,23 +52,3 @@ def process(current_price: float, sr_levels: dict, context: str, points_to_award
             "levels_analyzed": list(sr_levels.keys())
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
