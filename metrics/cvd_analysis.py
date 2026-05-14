@@ -42,8 +42,3 @@ def process(cvd_series: list, points_to_award: float = 3.33):
             "observation": f"CVD trend over last 20 mins: {direction}"
         }
     }
-
-
-
-
-
